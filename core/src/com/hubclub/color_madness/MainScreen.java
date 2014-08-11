@@ -125,76 +125,52 @@ public class MainScreen implements Screen {
 		}
 		
 		batch.end();
-		
-		shape.begin(ShapeType.Filled);
-		
-		
-	
-		//Checking if one ball has been caught, and if so, if it is a valid ball or not
-		for(ColorBall ball : balls){
-			ball.update();
-			if(ball.getRectangle().y<0){
-				balls.removeValue(ball, true);
-				for (j=0; j<targets.size; j++) {
-					if (targets.get(j).equals(ball.getColor().getRGB())) {
-						score=score - 10;
-						bonus=false;
-						break;
-					}
-				}
-				
-			}
-			else
-				if(ball.getRectangle().overlaps(bucketMouth)){
-					
-					for (Color target : targets) {
-						if (target.equals(ball.getColor().getRGB())) {
-							score= score + 100;
-							if(prins){
-								colorPixmap(img, bucketColor.getRGB(), bucketColor.mix(ball.getColor()).getRGB());
-								bucketColor=bucketColor.mix(ball.getColor());
-							}
-							else{
-								colorBucket(bucketColor.getRGB(), ball.getColor().getRGB());
-								bucketColor=ball.getColor();
-								prins=true;
-							}
-							
-							balls.removeValue(ball, true);
-							targets.removeValue(target, true); //BAMB TRAMP A REZOLVAT PROBLEMA DUMNEZEII EI
-							//System.out.println(score);
-							alive=1;
-							break;
-						}
-						else {
-							alive=0;
-						}
 
-					}
-				}
-		}
+        //Checking if one ball has been caught, and if so, if it is a valid ball or not
+        for(ColorBall ball : balls){
+            ball.update();
+            if(ball.getRectangle().y<0){
+                balls.removeValue(ball, true);
+                for (j=0; j<targets.size; j++) {
+                    if (targets.get(j).equals(ball.getColor().getRGB())) {
+                        score=score - 10;
+                        bonus=false;
+                        break;
+                    }
+                }
+
+            }
+            else
+            if(ball.getRectangle().overlaps(bucketMouth)){
+
+                for (Color target : targets) {
+                    if (target.equals(ball.getColor().getRGB())) {
+                        score= score + 100;
+                        if(prins){
+                            colorPixmap(img, bucketColor.getRGB(), bucketColor.mix(ball.getColor()).getRGB());
+                            bucketColor=bucketColor.mix(ball.getColor());
+                        }
+                        else{
+                            colorBucket(bucketColor.getRGB(), ball.getColor().getRGB());
+                            bucketColor=ball.getColor();
+                            prins=true;
+                        }
+
+                        balls.removeValue(ball, true);
+                        targets.removeValue(target, true); //BAMB TRAMP A REZOLVAT PROBLEMA DUMNEZEII EI
+                        //System.out.println(score);
+                        alive=1;
+                        break;
+                    }
+                    else {
+                        alive=0;
+                    }
+
+                }
+            }
+        }
 		
-		
-		shape.setColor(new Color(0.5f,0.5f,0.5f,1));
-		shape.rect(bar.getBar().x,bar.getBar().y,bar.getBar().width,bar.getBar().height);
-		
-		//the black rectangle in which the final color (mix) is draw
-		shape.setColor(new Color(0,0,0,1));
-		shape.rect(bar.getBlack().x,bar.getBlack().y,bar.getBlack().width,bar.getBlack().height);
-		
-		shape.setColor(mix.getRGB());
-		shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
-		
-		//checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
-		if(hard!=true){
-			
-			//drawing the targets colors
-			for(i=0;i<targets.size;i++){
-				shape.setColor(targets.get(i));
-				shape.circle(Math.max(i*380*Constants.width/n + 100*Constants.width,i*60*Constants.width+100*Constants.width), bar.getComponent().y, bar.getComponent().radius);
-			}
-		}
-		shape.end();
+		updateStatusBar();
 		
 		// checking if we are still alive or not ^^
 		if (alive==0) {
@@ -335,6 +311,30 @@ public class MainScreen implements Screen {
             }
         }
 
+    }
+
+    private void updateStatusBar() {
+        shape.begin(ShapeType.Filled);
+        shape.setColor(new Color(0.5f, 1f,0.5f,1));
+        shape.rect(bar.getBar().x,bar.getBar().y,bar.getBar().width,bar.getBar().height);
+
+         //the black rectangle in which the final color (mix) is draw
+        // shape.setColor(new Color(0,0,0,1));
+       // shape.rect(bar.getBlack().x,bar.getBlack().y,bar.getBlack().width,bar.getBlack().height);
+
+        shape.setColor(mix.getRGB());
+        shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
+
+        //checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
+        if(hard!=true){
+
+            //drawing the targets colors
+            for(i=0;i<targets.size;i++){
+                shape.setColor(targets.get(i));
+                shape.circle(Math.max(i*380*Constants.width/n + 100*Constants.width,i*60*Constants.width+100*Constants.width), bar.getComponent().y, bar.getComponent().radius);
+            }
+        }
+        shape.end();
     }
 
 	
