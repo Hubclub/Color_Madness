@@ -119,7 +119,7 @@ public class MainScreen implements Screen {
 		
 		batch.draw(new Texture(img),bucket.getX(),Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight);
 		for(ColorBall ball : balls){
-			colorPixmap(drop,lastBall,ball.getColor().getRGB());
+			colorBall(lastBall,ball.getColor().getRGB());
 			lastBall=ball.getColor().getRGB();
 			batch.draw(new Texture(drop),ball.getRectangle().x,ball.getRectangle().y,ball.getRectangle().width,ball.getRectangle().height);
 		}
@@ -155,7 +155,7 @@ public class MainScreen implements Screen {
 								bucketColor=bucketColor.mix(ball.getColor());
 							}
 							else{
-								colorPixmap(img, bucketColor.getRGB(), ball.getColor().getRGB());
+								colorBucket(bucketColor.getRGB(), ball.getColor().getRGB());
 								bucketColor=ball.getColor();
 								prins=true;
 							}
@@ -298,16 +298,44 @@ public class MainScreen implements Screen {
 	
 	public void colorPixmap(Pixmap pixmap,Color init,Color end){
 		pixmap.setColor(end);
-		
+
 		for(i=0;i<pixmap.getWidth();i++){
 			for(j=0;j<pixmap.getHeight();j++){
 				if(pixmap.getPixel(i, j)==Color.rgba8888(init)){
 					pixmap.drawPixel(i, j);
 				}
-					
+
 			}
 		}
 	}
+
+    public void colorBall(Color init, Color end) {
+        this.drop.setColor(end);
+
+        for(i=0;i<this.drop.getWidth();i++){
+            for(j=0;j<this.drop.getHeight();j++){
+                if(this.drop.getPixel(i, j)==Color.rgba8888(init)){
+                    this.drop.drawPixel(i, j);
+                }
+
+            }
+        }
+    }
+
+    public void colorBucket(Color init, Color end) {
+
+        this.img.setColor(end);
+
+        for(i=0;i<this.img.getWidth();i++){
+            for(j=0;j<this.img.getHeight();j++){
+                if(this.img.getPixel(i, j)==Color.rgba8888(init)){
+                    this.img.drawPixel(i, j);
+                }
+
+            }
+        }
+
+    }
 
 	
 	
