@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
 
-//bara de sus 
+//the top bar
 public class StatusBar {
 	private Rectangle bar,black;
 	private Circle target;

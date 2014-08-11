@@ -1,10 +1,11 @@
 package com.hubclub.color_madness;
 
-//Clasa pentru galeata
+//The class for the bucket
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Bucket {
@@ -19,7 +20,7 @@ public class Bucket {
 	
 	public void update() {
 		
-			//Miscarea galetii pentru Android/Desktop
+			//The movement of the bucket for Android/Desktop versions
 		
 			if(Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer) ){
 				rectangle.x-=Gdx.input.getAccelerometerX()*MainScreen.delta*Constants.width*110;
@@ -33,7 +34,7 @@ public class Bucket {
 				rectangle.x+=250*Constants.width*MainScreen.delta;
 			}
 			
-			//prevenirea iesirii galetii in afara ecranului
+			//Preventing the bucket from getting out of the screen
 			
 			if(rectangle.x<0){
 				rectangle.x=1;
@@ -52,6 +53,8 @@ public class Bucket {
 	public Rectangle getRectangle(){
 		return rectangle;
 	}
+	
+	
 	
 
 }

@@ -4,46 +4,37 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 
-//clasa pentru bilele care cad
+//The class for the falling balls
 
 public class ColorBall {
-	private Circle circle;
+	private Rectangle rect;
 	private MyColor color;
 	private float velocity;
 	private float acceleration=5;
 	
-	public ColorBall(Circle circle,MyColor color){
-		this.circle=new Circle(circle);
-		this.color=color;
+	public ColorBall(float x,MyColor color){
 		
-		//viteza initiala
+		this.color=color;
+		rect=new Rectangle(x,800*Constants.height,Constants.dropWidth,Constants.dropHeight);
+		
+		//the initial speed of the balls
 		velocity=2*Constants.height*MainScreen.delta;
 	}
 	
 	void update(){
-		//accelerarea
+		//the acceleration
 		velocity+=(float)acceleration*MainScreen.delta*Constants.height;
 		//System.out.println(velocity);
-		circle.y-=velocity;
+		rect.y-=velocity;
 	}
 	
-	public Circle getCircle(){
-		return circle;
+	public Rectangle getRectangle(){
+		return rect;
 	}
 	
 	public MyColor getColor(){
 		return color;
 	}
 	
-	public boolean fits(Rectangle rectangle){
-		
-		//verifica daca o bila intra in galeata
-		if(circle.y<rectangle.y+rectangle.height && circle.y>rectangle.y){
-			if(circle.x>rectangle.x && circle.x<rectangle.x+rectangle.width){
-				return true;
-			}
-			else return false;
-		}
-		else return false;
-	}
+	
 }

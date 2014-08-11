@@ -7,6 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,29 +21,30 @@ import com.badlogic.gdx.utils.Timer.Task;
 public class MainScreen implements Screen {
 
 	private ColorGame game;
-	private Texture img, background;
-	private MyColor mix;// culoarea care trebuie obtinuta
+	private Texture  background;
+	private MyColor mix;// the color that must be obtained
 	private SpriteBatch batch;
 	private Bucket bucket;
-	private Array<ColorBall> balls;// bilele generate
-	private Array<Color> targets;// culorile care trebuie combinate pentru a obtine mix
+	private Array<ColorBall> balls;// in this array we find the generated balls that fall down the screen
+	private Array<Color> targets;// here are the colors that must be combined in order to obtain mix
 	public static float delta;
 	private ShapeRenderer shape;
 	private int i,n,j;
-	private float spawn=0,interval=2f;//variabile folosite pentru masurarea diferentei de timp dintre generarea a 2 bile
+	private float spawn=0,interval=2f;// used to measure the difference of time between the spawn of 2 balls
 	private Random rand;
 	private Rectangle bucketMouth;
 	private int score;
 	private int alive = 1;
 	private MyColor bucketColor;
-
+	private Pixmap img, drop;
 	private int highscore;
-	private int[][] paleta ;// culorile de baza
-	private int cursor;//variabila folosita pentru deplasarea in matrice
+	private int[][] paleta ;// basic colors
+	private int cursor;//used to move through the matrix
 	private boolean prins;
 	private StatusBar bar;
-	private int[] proportion;//pentru verificare
+	private int[] proportion;//for checking some shitty cases
 	private boolean hard,bonus;
+	private Color lastBall;
 	
 	
 	public MainScreen(ColorGame game,int n,boolean hard,int score){
@@ -51,7 +53,8 @@ public class MainScreen implements Screen {
 		this.score=score;
 		rand=new Random();
 		background = new Texture("wall.jpg");
-		img = new Texture("bucket_empty.png");
+		img = new Pixmap(Gdx.files.internal("bucket.png"));
+		drop=new Pixmap(Gdx.files.internal("pic.png"));
 		batch = new SpriteBatch();
 		bucket=new Bucket(new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight));
 		balls = new Array<ColorBall>();
@@ -61,19 +64,20 @@ public class MainScreen implements Screen {
 		this.hard=hard;
 		bar=new StatusBar();
 		
+		lastBall=new Color(0,0,1,1);
 		bucketColor=new MyColor(0,0,0,1);
 		targets = new Array<Color>();
 	
 		score=0;
 		bonus=true;
 		
-		//definirea paletei
+		//defining the palette colors
 		paleta=new int[][]{{0,71,171},{0,128,0},{255,0,0},{78,22,9},{255,165,0},{255,255,0},{0,255,255},{66,170,255},{128,0,128},{0,0,0},{255,255,255}};
 		proportion=new int[11];
 		initVector(proportion);
 		
 		createMix();
-		//pentru a evita cazul in care se combina aceleasi culori
+		//we use this to prevent the case in which we have to combine the same colors (eg : 2 red and 2 blue , 4 red)
 		while(cmmdc(proportion)!=1){
 			createMix();
 		}
@@ -92,16 +96,16 @@ public class MainScreen implements Screen {
 		
 		System.out.println("" + interval);
 		
-		//generarea
+		//randomly generating the dropping balls
 		spawn+=delta;
 		if(spawn>interval){
 			cursor=rand.nextInt(11);
-			balls.add(new ColorBall(new Circle(20+rand.nextInt(440)*Constants.width,800*Constants.height,20*Constants.width),new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1)));
+			balls.add(new ColorBall(20+rand.nextInt(440)*Constants.width,new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1)));
 			spawn=0;
 		}
 		
 		
-		//miscarea galetii
+		// calling the function for the bucket movement
 		bucket.update();
 		bucketMouth.setX(bucket.getX());
 		
@@ -111,27 +115,28 @@ public class MainScreen implements Screen {
 		
 		
 		batch.begin();
-		//batch.draw(background,0,0,480*Constants.width,800*Constants.height);
+		batch.draw(background,0,0,480*Constants.width,800*Constants.height); // an optional background, this one is the best so far.
 		
-		batch.draw(img,bucket.getX(),Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight);
+		batch.draw(new Texture(img),bucket.getX(),Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight);
+		for(ColorBall ball : balls){
+			colorPixmap(drop,lastBall,ball.getColor().getRGB());
+			lastBall=ball.getColor().getRGB();
+			batch.draw(new Texture(drop),ball.getRectangle().x,ball.getRectangle().y,ball.getRectangle().width,ball.getRectangle().height);
+		}
+		
 		batch.end();
 		
 		shape.begin(ShapeType.Filled);
 		
 		
-		//desenarea bilelor de prins
-		for(i=0;i<balls.size;i++){
-			shape.setColor(balls.get(i).getColor().getRGB());
-			shape.circle(balls.get(i).getCircle().x,balls.get(i).getCircle().y ,balls.get(i).getCircle().radius);
-		}
-		
-		//verificarea prinderii/scaparii unei bile
-		for(i=0;i<balls.size;i++){
-			balls.get(i).update();
-			if(balls.get(i).getCircle().y<0){
-				balls.removeIndex(i);
+	
+		//Checking if one ball has been caught, and if so, if it is a valid ball or not
+		for(ColorBall ball : balls){
+			ball.update();
+			if(ball.getRectangle().y<0){
+				balls.removeValue(ball, true);
 				for (j=0; j<targets.size; j++) {
-					if (targets.get(j).equals(balls.get(i).getColor().getRGB())) {
+					if (targets.get(j).equals(ball.getColor().getRGB())) {
 						score=score - 10;
 						bonus=false;
 						break;
@@ -140,18 +145,23 @@ public class MainScreen implements Screen {
 				
 			}
 			else
-				if(balls.get(i).fits(bucketMouth)){
-					for (j=0;j<targets.size; j++) {
-						if (targets.get(j).equals(balls.get(i).getColor().getRGB())) {
+				if(ball.getRectangle().overlaps(bucketMouth)){
+					
+					for (Color target : targets) {
+						if (target.equals(ball.getColor().getRGB())) {
 							score= score + 100;
-							if(prins)
-								bucketColor=bucketColor.mix(balls.get(i).getColor());
+							if(prins){
+								colorPixmap(img, bucketColor.getRGB(), bucketColor.mix(ball.getColor()).getRGB());
+								bucketColor=bucketColor.mix(ball.getColor());
+							}
 							else{
-								bucketColor=balls.get(i).getColor();
+								colorPixmap(img, bucketColor.getRGB(), ball.getColor().getRGB());
+								bucketColor=ball.getColor();
 								prins=true;
 							}
-							balls.removeIndex(i);
-							targets.removeIndex(j); //BAMB TRAMP A REZOLVAT PROBLEMA DUMNEZEII EI
+							
+							balls.removeValue(ball, true);
+							targets.removeValue(target, true); //BAMB TRAMP A REZOLVAT PROBLEMA DUMNEZEII EI
 							//System.out.println(score);
 							alive=1;
 							break;
@@ -164,23 +174,21 @@ public class MainScreen implements Screen {
 				}
 		}
 		
-		//culoarea galetii + bara
-		shape.setColor(bucketColor.getRGB());
-		shape.rect(bucket.getRectangle().x+bucket.getRectangle().width/3,bucket.getRectangle().y+bucket.getRectangle().height/3,bucket.getRectangle().width/3,bucket.getRectangle().height/3);
+		
 		shape.setColor(new Color(0.5f,0.5f,0.5f,1));
 		shape.rect(bar.getBar().x,bar.getBar().y,bar.getBar().width,bar.getBar().height);
 		
-		//patratul negru in care se deseneaza mix
+		//the black rectangle in which the final color (mix) is draw
 		shape.setColor(new Color(0,0,0,1));
 		shape.rect(bar.getBlack().x,bar.getBlack().y,bar.getBlack().width,bar.getBlack().height);
 		
 		shape.setColor(mix.getRGB());
 		shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
 		
-		//in modul hard culorile din targets nu sunt desenate
+		//checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
 		if(hard!=true){
 			
-			//desenarea culorilor din targets
+			//drawing the targets colors
 			for(i=0;i<targets.size;i++){
 				shape.setColor(targets.get(i));
 				shape.circle(Math.max(i*380*Constants.width/n + 100*Constants.width,i*60*Constants.width+100*Constants.width), bar.getComponent().y, bar.getComponent().radius);
@@ -188,10 +196,10 @@ public class MainScreen implements Screen {
 		}
 		shape.end();
 		
-		// moartea
+		// checking if we are still alive or not ^^
 		if (alive==0) {
 			
-			//scrierea/citirea fisierului care retine highscore-ul
+			//reading/writing the file in which we keep the highscore
 			FileHandle file = Gdx.files.local("savefile/highscore.txt");
 			if(file.exists()){
 			  highscore = Integer.valueOf(file.readString());
@@ -246,7 +254,7 @@ public class MainScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		
+		//disposing shit
 		img.dispose();
 		batch.dispose();
 		shape.dispose();
@@ -287,6 +295,20 @@ public class MainScreen implements Screen {
 				mix=mix.mix(new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1));
 		}
 	}
+	
+	public void colorPixmap(Pixmap pixmap,Color init,Color end){
+		pixmap.setColor(end);
+		
+		for(i=0;i<pixmap.getWidth();i++){
+			for(j=0;j<pixmap.getHeight();j++){
+				if(pixmap.getPixel(i, j)==Color.rgba8888(init)){
+					pixmap.drawPixel(i, j);
+				}
+					
+			}
+		}
+	}
+
 	
 	
 	

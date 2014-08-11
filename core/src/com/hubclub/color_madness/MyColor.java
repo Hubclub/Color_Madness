@@ -2,7 +2,7 @@ package com.hubclub.color_madness;
 
 import com.badlogic.gdx.graphics.Color;
 
-//clasa pentru culori ce urmeaza a fi combinate
+//the class for the colors that are next to be combined
 public class MyColor extends Color{
 	public int r,g,b;
 	public float c,m,y,k,a;
