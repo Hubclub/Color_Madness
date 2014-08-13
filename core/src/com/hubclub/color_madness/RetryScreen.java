@@ -62,17 +62,15 @@ public class RetryScreen implements Screen{
 			pointer.x=Gdx.input.getX();
 			pointer.y=800*Constants.height - Gdx.input.getY();
 			if (pointer.overlaps(menu)) {
+				this.dispose();
 				game.setScreen(new MenuScreen(game));
-				font.dispose();
-				shape.dispose();
-				batch.dispose();
+
 			}
 			
 			if (pointer.overlaps(retry)) {
+				this.dispose();
 				game.setScreen(new MainScreen(game, 2,hard,0));
-				font.dispose();
-				shape.dispose();
-				batch.dispose();
+
 			}
 
 		}
@@ -111,6 +109,12 @@ public class RetryScreen implements Screen{
 
 	@Override
 	public void dispose() {
+		shape.dispose();
+		batch.dispose();
+		font.dispose();
+		
+		System.gc();
+
 		// TODO Auto-generated method stub
 		game.dispose();
 	}

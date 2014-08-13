@@ -57,16 +57,15 @@ public class MenuScreen implements Screen{
 			pointer.x=Gdx.input.getX();
 			pointer.y=800*Constants.height-Gdx.input.getY();
 			if (pointer.overlaps(normal)) {
+				this.dispose();
+				System.gc();
 				game.setScreen(new MainScreen(game, 2,false,0));
-				font.dispose();
-				batch.dispose();
-				shape.dispose();
 			}
 			if(pointer.overlaps(hardcore)){
+				this.dispose();
+				System.gc();
 				game.setScreen(new MainScreen(game,2,true,0));
-				font.dispose();
-				batch.dispose();
-				shape.dispose();
+
 			}
 		}
 		
@@ -106,12 +105,14 @@ public class MenuScreen implements Screen{
 	@Override
 	public void dispose() {
 		game.dispose();
+		shape.dispose();
+		batch.dispose();
+		font.dispose();
+
+		
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
-	
-	
+
 
 }
