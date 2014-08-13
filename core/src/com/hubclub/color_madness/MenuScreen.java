@@ -10,8 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.InputEvent.Type;
-import com.badlogic.gdx.utils.Array;
 
 public class MenuScreen implements Screen{
 	
@@ -26,6 +24,9 @@ public class MenuScreen implements Screen{
 	
 	public MenuScreen(ColorGame game){
 		this.game = game;
+	}
+	
+	public void set () {
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
 		batch = new SpriteBatch();
@@ -33,8 +34,6 @@ public class MenuScreen implements Screen{
 		pointer = new Rectangle (0,0, 0.1f, 0.1f);
 		normal = new Rectangle(190*Constants.width, 500*Constants.height,100*Constants.width, 75*Constants.height);
 		hardcore = new Rectangle(190*Constants.width, 300*Constants.height, 100*Constants.width, 75*Constants.height);
-		
-		
 	}
 	
 	@Override
@@ -58,13 +57,15 @@ public class MenuScreen implements Screen{
 			pointer.y=800*Constants.height-Gdx.input.getY();
 			if (pointer.overlaps(normal)) {
 				this.dispose();
-				System.gc();
-				game.setScreen(new MainScreen(game, 2,false,0));
+				//System.gc();
+				ColorGame.mainScreen.set(2,false,0);
+				game.setScreen(ColorGame.mainScreen);
 			}
 			if(pointer.overlaps(hardcore)){
 				this.dispose();
 				System.gc();
-				game.setScreen(new MainScreen(game,2,true,0));
+				ColorGame.mainScreen.set(2,true,0);
+				game.setScreen(ColorGame.mainScreen);
 
 			}
 		}
@@ -104,7 +105,7 @@ public class MenuScreen implements Screen{
 
 	@Override
 	public void dispose() {
-		game.dispose();
+		//game.dispose();
 		shape.dispose();
 		batch.dispose();
 		font.dispose();

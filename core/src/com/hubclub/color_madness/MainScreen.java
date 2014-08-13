@@ -9,16 +9,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 public class MainScreen implements Screen {
 
 	private ColorGame game;
@@ -28,14 +24,13 @@ public class MainScreen implements Screen {
 	private Bucket bucket;
 	private Array<ColorBall> balls;// in this array we find the generated balls that fall down the screen
 	private Array<Color> targets;// here are the colors that must be combined in order to obtain mix
-	public static float delta;
 	private ShapeRenderer shape;
 	private int i,n,j;
 	private float spawn=0,interval=2f;// used to measure the difference of time between the spawn of 2 balls
 	private Random rand;
 	private Rectangle bucketMouth;
 	private int score;
-	private int alive = 1;
+	private int alive;
 	private MyColor bucketColor;
 	private Pixmap img;
 	private int highscore;
@@ -54,9 +49,14 @@ public class MainScreen implements Screen {
 	 Texture barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
 	 Texture targetTexture = new Texture(Gdx.files.internal("target.png"));
 	
-	public MainScreen(ColorGame game,int n,boolean hard,int score){
+	public MainScreen(ColorGame game){
 		this.game=game;
+	}
+	
+	public void set(int n,boolean hard,int score){
 		this.n=n;
+		this.hard=hard;
+		alive=1;
 		this.score=score;
 		rand=new Random();
 		background = new Texture("wall.jpg");
@@ -68,7 +68,6 @@ public class MainScreen implements Screen {
 		shape=new ShapeRenderer();
 		bucketMouth = new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y+Constants.BucketHeight*(img.getHeight()-7)/img.getHeight(),Constants.BucketWidth,7*Constants.BucketHeight/img.getHeight());
 		interval=5;
-		this.hard=hard;
 		bar=new StatusBar();
 		
 		bucketColor=new MyColor(0,0,0,1);
@@ -76,7 +75,7 @@ public class MainScreen implements Screen {
 	
 		score=0;
 		bonus=true;
-		
+		prins=false;
 		//defining the palette colors
 		paleta=new int[][]{{0,71,171},{0,128,0},{255,0,0},{78,22,9},{255,165,0},{255,255,0},{0,255,255},{66,170,255},{128,0,128},{0,0,0},{255,255,255}};
 		proportion=new int[11];
@@ -96,10 +95,11 @@ public class MainScreen implements Screen {
 		Gdx.gl.glClearColor((float)212/255, (float)202/255,(float) 178/255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		this.delta=delta;
+		//this.delta=delta;
 		
-	
+		//System.out.println(ballPool.getFree());
 		//System.out.println("" + interval);
+		//System.out.println(Gdx.app.getJavaHeap());
 		
 		//randomly generating the dropping balls
 		spawn+=delta;
@@ -107,7 +107,7 @@ public class MainScreen implements Screen {
 			
 			cursor=rand.nextInt(11);
 			ColorBall newBall=ballPool.obtain();
-			newBall.init(20+rand.nextInt(440)*Constants.width,new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1));
+			newBall.init(20+rand.nextInt(440)*Constants.width,new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1),delta);
 			newBall.setTexture(new Texture(cursor+".png"));
 			balls.add(newBall);
 			spawn=0;
@@ -116,7 +116,7 @@ public class MainScreen implements Screen {
 		
 		
 		// calling the function for the bucket movement
-		bucket.update();
+		bucket.update(delta);
 		bucketMouth.setX(bucket.getX());
 		
 	
@@ -138,7 +138,7 @@ public class MainScreen implements Screen {
 	
 		//Checking if one ball has been caught, and if so, if it is a valid ball or not
 		for(ColorBall ball : balls){
-			ball.update();
+			ball.update(delta);
 			Color color = new Color (ball.getColor().getRGB());
 			if(ball.getRectangle().y<0){
 				balls.removeValue(ball, false);
@@ -159,13 +159,13 @@ public class MainScreen implements Screen {
 							score= score + 100;
 							if(prins){
 								colorPixmap(img, bucketColor.getRGB(), bucketColor.mix(ball.getColor()).getRGB());
-								//bucketTexture.dispose();
+								bucketTexture.dispose();
 								bucketTexture=new Texture(img);
 								bucketColor=bucketColor.mix(ball.getColor());
 							}
 							else{
 								colorPixmap(img, bucketColor.getRGB(), color);
-								//bucketTexture.dispose();
+								bucketTexture.dispose();
 								bucketTexture=new Texture(img);
 								bucketColor=ball.getColor();
 								prins=true;
@@ -213,7 +213,8 @@ public class MainScreen implements Screen {
 			}
 			this.dispose();
 			System.gc();
-			game.setScreen(new RetryScreen(game,n,hard,score));
+			ColorGame.retryScreen.set(hard,score);
+			game.setScreen(ColorGame.retryScreen);
 			
 		}
 		
@@ -223,7 +224,8 @@ public class MainScreen implements Screen {
 			}
 			this.dispose();
 			System.gc();
-			game.setScreen(new MainScreen(game, n+1,hard,score));
+			ColorGame.mainScreen.set(n+1,hard,score);
+			game.setScreen(ColorGame.mainScreen);
 			
 		}
 		
@@ -279,7 +281,7 @@ public class MainScreen implements Screen {
 		} */
 		//targets.clear(); 
 		background.dispose();
-		game.dispose();
+		//game.dispose();
 	}
 	
 	public int cmmdc(int[] vec){
@@ -308,13 +310,14 @@ public class MainScreen implements Screen {
 		targets.clear();
 		
 		for(i=0;i<n;i++){
+			MyColor color=new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1);
 			cursor=rand.nextInt(11);
 			targets.add(new Color((float)paleta[cursor][0]/255,(float)paleta[cursor][1]/255,(float)paleta[cursor][2]/255,1));
 			proportion[cursor]++;
 			if(i==0)
 				mix=new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1);
 			else
-				mix=mix.mix(new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1));
+				mix=mix.mix(color);
 		}
 	}
 	
@@ -336,11 +339,15 @@ public class MainScreen implements Screen {
 		 batch.draw(barTexture, bar.getBar().x , bar.getBar().y, bar.getBar().width, bar.getBar().height);
 		 batch.draw(targetTexture, bar.getBlack().x, bar.getBlack().y, bar.getBlack().width, bar.getBlack().height);
 		 batch.end();
+		 
 		 shape.begin(ShapeType.Filled);
 		 shape.setColor(mix.getRGB());
 		 shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
+		 
+		 
 		 //checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
 		 if(hard!=true){
+			 
 			//drawing the targets colors
 			for(i=0;i<targets.size;i++){
 					shape.setColor(targets.get(i));

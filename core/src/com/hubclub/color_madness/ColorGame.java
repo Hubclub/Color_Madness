@@ -1,13 +1,18 @@
 package com.hubclub.color_madness;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 public class ColorGame extends com.badlogic.gdx.Game {
+	
+	public static MainScreen mainScreen ;
+	public static MenuScreen menuScreen ;
+	public static RetryScreen retryScreen ; 
 	
 	@Override
 	public void create () {
-		this.setScreen(new MenuScreen(this));
+		mainScreen = new MainScreen(this);
+		menuScreen = new MenuScreen(this);
+		menuScreen.set();
+		retryScreen = new RetryScreen(this);
+		this.setScreen(menuScreen);
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.hubclub.color_madness;
 
-import java.util.logging.FileHandler;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -20,14 +18,16 @@ public class RetryScreen implements Screen{
 	private Rectangle retry, menu, pointer;
 	private SpriteBatch batch;
 	private FileHandle file;
-	private int n;
 	private boolean hard;
 	private int score;
 	
 	
-	public RetryScreen(ColorGame game,int n,boolean hard,int score){
+	public RetryScreen(ColorGame game){
 		this.game=game;
-		this.n=n ;
+		
+	}
+	
+	public void set(boolean hard,int score){
 		this.score=score;
 		shape = new ShapeRenderer();
 		retry = new Rectangle(190*Constants.width, 500*Constants.height,100*Constants.width, 75*Constants.height);
@@ -38,6 +38,7 @@ public class RetryScreen implements Screen{
 		font.setScale(Constants.width*2, Constants.height*2);
 		file = Gdx.files.local("savefile/highscore.txt");
 		this.hard=hard;
+	
 	}
 	
 	@Override
@@ -45,6 +46,7 @@ public class RetryScreen implements Screen{
 		// TODO Auto-generated method stub
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
 		
 		shape.begin(ShapeType.Filled);
 		shape.rect(retry.x, retry.y, retry.width, retry.height);
@@ -63,13 +65,15 @@ public class RetryScreen implements Screen{
 			pointer.y=800*Constants.height - Gdx.input.getY();
 			if (pointer.overlaps(menu)) {
 				this.dispose();
-				game.setScreen(new MenuScreen(game));
+				ColorGame.menuScreen.set();
+				game.setScreen(ColorGame.menuScreen);
 
 			}
 			
 			if (pointer.overlaps(retry)) {
 				this.dispose();
-				game.setScreen(new MainScreen(game, 2,hard,0));
+				ColorGame.mainScreen.set(2,hard,0);
+				game.setScreen(ColorGame.mainScreen);
 
 			}
 
@@ -116,7 +120,7 @@ public class RetryScreen implements Screen{
 		System.gc();
 
 		// TODO Auto-generated method stub
-		game.dispose();
+		//game.dispose();
 	}
 	
 	

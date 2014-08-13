@@ -1,8 +1,6 @@
 package com.hubclub.color_madness;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
@@ -24,9 +22,9 @@ public class ColorBall implements Poolable{
 		velocity=2*Constants.height*MainScreen.delta;
 	}*/
 	
-	void update(){
+	void update(float delta){
 		//the acceleration
-		velocity+=(float)acceleration*MainScreen.delta*Constants.height;
+		velocity+=acceleration*delta*Constants.height;
 		//System.out.println(velocity);
 		rect.y-=velocity;
 	}
@@ -38,7 +36,7 @@ public class ColorBall implements Poolable{
 	public MyColor getColor(){
 		return color;
 	}
-	public Texture getTexture(){
+	public Texture getTexture() {
 		return drop;
 	}
 	public void setTexture(Texture drop){
@@ -51,6 +49,7 @@ public class ColorBall implements Poolable{
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
+		drop.dispose();
 		drop=null;
 		rect=null;
 		velocity=0;
@@ -58,12 +57,12 @@ public class ColorBall implements Poolable{
 		color=null;
 	}
 	
-	public void init(float x, MyColor color){
+	public void init(float x, MyColor color,float delta){
 		this.color=color;
 		rect=new Rectangle(x,800*Constants.height,Constants.dropWidth,Constants.dropHeight);
 		
 		//the initial speed of the balls
-		velocity=2*Constants.height*MainScreen.delta;
+		velocity=2*Constants.height*delta;
 		acceleration=5;
 	}
 	

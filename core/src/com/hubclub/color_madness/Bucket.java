@@ -5,7 +5,6 @@ package com.hubclub.color_madness;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Bucket {
@@ -18,20 +17,20 @@ public class Bucket {
 		
 	}
 	
-	public void update() {
+	public void update(float delta) {
 		
 			//The movement of the bucket for Android/Desktop versions
 		
 			if(Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer) ){
-				rectangle.x-=Gdx.input.getAccelerometerX()*MainScreen.delta*Constants.width*110;
+				rectangle.x-=Gdx.input.getAccelerometerX()*delta*Constants.width*110;
 			}
 		
 			if(Gdx.input.isKeyPressed(Keys.A)) {
-				rectangle.x-=250*Constants.width*MainScreen.delta;
+				rectangle.x-=250*Constants.width*delta;
 			}
 		
 			if (Gdx.input.isKeyPressed(Keys.D)) {
-				rectangle.x+=250*Constants.width*MainScreen.delta;
+				rectangle.x+=250*Constants.width*delta;
 			}
 			
 			//Preventing the bucket from getting out of the screen
