@@ -59,7 +59,7 @@ public class MainScreen implements Screen {
 		alive=1;
 		this.score=score;
 		rand=new Random();
-		background = new Texture("wall.jpg");
+		background = new Texture("color.jpg");
 		img = new Pixmap(Gdx.files.internal("bucket.png"));
 		bucketTexture=new Texture(img);
 		batch = new SpriteBatch();

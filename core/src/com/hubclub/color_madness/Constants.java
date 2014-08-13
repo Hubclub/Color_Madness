@@ -14,6 +14,16 @@ public class Constants {
 	public static final float firstPoint = 50*width;
 	public static final float distance = 480*width/3;
 	public static final float dropWidth=25*width,dropHeight=60*height;
+
+    //Menu buttons dimensions in pixels
+    //normal button
+    public static final int NORMAL_WIDTH = 250;
+    public static final int NORMAL_HEIGHT = 70;
+    //hardcore button
+    public static final int HARDCORE_WIDTH = 303;
+    public static final int HARDCORE_HEIGHT = 70;
+
+
 	
 	
 
