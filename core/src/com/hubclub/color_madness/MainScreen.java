@@ -45,6 +45,9 @@ public class MainScreen implements Screen {
 	private int[] proportion;//for checking some shitty cases
 	private boolean hard,bonus;
 	private Color lastBall;
+
+    Texture barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
+    Texture targetTexture = new Texture(Gdx.files.internal("target.png"));
 	
 	
 	public MainScreen(ColorGame game,int n,boolean hard,int score){
@@ -314,13 +317,21 @@ public class MainScreen implements Screen {
     }
 
     private void updateStatusBar() {
+
+        //draw status bar texture
+
+        batch.begin();
+        batch.draw(barTexture, bar.getBar().x , bar.getBar().y, bar.getBar().width, bar.getBar().height);
+        batch.draw(targetTexture, bar.getBlack().x, bar.getBlack().y, bar.getBlack().width, bar.getBlack().height);
+        batch.end();
+
         shape.begin(ShapeType.Filled);
-        shape.setColor(new Color(0.5f, 1f,0.5f,1));
-        shape.rect(bar.getBar().x,bar.getBar().y,bar.getBar().width,bar.getBar().height);
+        //shape.setColor(new Color(0.5f, 1f,0.5f,1));
+        //rect(bar.getBar().x,bar.getBar().y,bar.getBar().width,bar.getBar().height);
 
          //the black rectangle in which the final color (mix) is draw
-        // shape.setColor(new Color(0,0,0,1));
-       // shape.rect(bar.getBlack().x,bar.getBlack().y,bar.getBlack().width,bar.getBlack().height);
+         //  shape.setColor(new Color(0,0,0,1));
+          // shape.rect(bar.getBlack().x,bar.getBlack().y,bar.getBlack().width,bar.getBlack().height);
 
         shape.setColor(mix.getRGB());
         shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
@@ -335,6 +346,8 @@ public class MainScreen implements Screen {
             }
         }
         shape.end();
+
+
     }
 
 	
