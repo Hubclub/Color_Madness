@@ -23,6 +23,11 @@ public class Constants {
     public static final int HARDCORE_WIDTH = 303;
     public static final int HARDCORE_HEIGHT = 70;
 
+    //Retry screen buttons
+     public static final int RETRY_WIDTH = 193;
+     public static final int RETRY_HEIGHT = 68;
+     public static final int BACK_WIDTH = 173;
+     public static final int BACK_HEIGHT = 71;
 
 	
 	
