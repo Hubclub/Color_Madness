@@ -310,14 +310,13 @@ public class MainScreen implements Screen {
 		targets.clear();
 		
 		for(i=0;i<n;i++){
-			MyColor color=new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1);
 			cursor=rand.nextInt(11);
 			targets.add(new Color((float)paleta[cursor][0]/255,(float)paleta[cursor][1]/255,(float)paleta[cursor][2]/255,1));
 			proportion[cursor]++;
 			if(i==0)
 				mix=new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1);
 			else
-				mix=mix.mix(color);
+				mix=mix.mix(new MyColor(paleta[cursor][0],paleta[cursor][1],paleta[cursor][2],1));
 		}
 	}
 	
