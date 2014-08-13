@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class MenuScreen implements Screen{
 	
@@ -25,12 +27,25 @@ public class MenuScreen implements Screen{
     private Texture normalButton;
 	private Texture background;
 
+    //Stage
+    private Stage stage;
+    private Label label;
+    private Label.LabelStyle style;
+    BitmapFont sceneFont;
 	
 	public MenuScreen(ColorGame game){
 		this.game = game;
 	}
 	
 	public void set () {
+        //Scene 2d label
+        sceneFont = new BitmapFont();
+        style = new Label.LabelStyle();
+        style.font = sceneFont;
+        stage = new Stage();
+        label = new Label("Hello Color Game", style);
+
+
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
 		batch = new SpriteBatch();
@@ -52,7 +67,8 @@ public class MenuScreen implements Screen{
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
+
 		
 		batch.begin();
         //draw the background
@@ -62,7 +78,7 @@ public class MenuScreen implements Screen{
         batch.draw(hardcoreButton, hardcore.x , hardcore.y, hardcore.width, hardcore.height);
 
 
-		font.draw(batch, "Hello", 210*Constants.width, 700*Constants.height);
+
 
 		batch.end();
 		
@@ -87,6 +103,9 @@ public class MenuScreen implements Screen{
 
 			}
 		}
+
+        stage.addActor(label);
+        stage.draw();
 		
 		
 	}

@@ -130,11 +130,7 @@ public class MainScreen implements Screen {
 		}
 		
 		batch.end();
-		
-		
-		shape.begin(ShapeType.Filled);
-		
-		
+
 	
 		//Checking if one ball has been caught, and if so, if it is a valid ball or not
 		for(ColorBall ball : balls){
@@ -183,20 +179,7 @@ public class MainScreen implements Screen {
 					}
 				}
 		}
-		
-		//System.out.println(balls.size);
-		//System.out.println(targets.size);
-		
-		//checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
-		if(hard!=true){
-			
-			//drawing the targets colors
-			for(i=0;i<targets.size;i++){
-				shape.setColor(targets.get(i));
-				shape.circle(Math.max(i*380*Constants.width/n + 100*Constants.width,i*60*Constants.width+100*Constants.width), bar.getComponent().y, bar.getComponent().radius);
-			}
-		}
-		shape.end();
+
 		
 		updateStatusBar();
 		// checking if we are still alive or not ^^
