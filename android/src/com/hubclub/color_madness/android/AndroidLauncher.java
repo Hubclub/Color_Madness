@@ -13,11 +13,10 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		   PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "My Tag");
-		   wl.acquire();
+		
 		
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
+		config.useWakelock=true;
 		initialize(new ColorGame(), config);
 	}
 }
