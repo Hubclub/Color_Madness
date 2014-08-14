@@ -73,8 +73,6 @@ public class MenuScreen implements Screen, InputProcessor{
         batch.draw(hardcoreButton, hardcore.x , hardcore.y, hardcore.width, hardcore.height);
 
 
-
-
 		batch.end();
 		
 		
