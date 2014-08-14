@@ -50,6 +50,10 @@ public class RetryScreen implements Screen,InputProcessor{
         //buttons
         retryButton = new Texture(Gdx.files.internal("retry.png"));
         backButton = new Texture(Gdx.files.internal("back.png"));
+        
+        retryTouched = false;
+        menuTouched = false;
+        
 
 	}
 
