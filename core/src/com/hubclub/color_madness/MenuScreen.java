@@ -42,12 +42,9 @@ public class MenuScreen implements Screen, InputProcessor{
 	public void set () {
         //Scene 2d label
         sceneFont = new BitmapFont();
-        //style = new Label.LabelStyle();
-       // style.font = sceneFont;
-       // stage = new Stage();
-        //label = new Label("Hello Color Game", style);
         
         Gdx.input.setInputProcessor(this);
+
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
 		batch = new SpriteBatch();
@@ -84,12 +81,8 @@ public class MenuScreen implements Screen, InputProcessor{
 
 		batch.end();
 		
-		shape.begin(ShapeType.Filled);
-		//shape.rect(pointer.x,pointer.y, pointer.width, pointer.height);
-		shape.end();
-		
-       //stage.addActor(label);
-       //stage.draw();
+
+>>>>>>> origin/master
 		
 		
 	}
