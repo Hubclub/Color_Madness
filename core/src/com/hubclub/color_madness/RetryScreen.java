@@ -113,6 +113,7 @@ public class RetryScreen implements Screen,InputProcessor{
 		shape.dispose();
 		batch.dispose();
 		font.dispose();
+		background.dispose();
 
 		System.gc();
 
