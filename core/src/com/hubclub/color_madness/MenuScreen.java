@@ -44,6 +44,7 @@ public class MenuScreen implements Screen{
         style.font = sceneFont;
         stage = new Stage();
         label = new Label("Hello Color Game", style);
+        label.setFontScale(2);
 
 
 		font = new BitmapFont();
@@ -105,7 +106,7 @@ public class MenuScreen implements Screen{
 		}
 
         stage.addActor(label);
-        stage.draw();
+       // stage.draw();
 		
 		
 	}
