@@ -40,14 +40,13 @@ public class MainScreen implements Screen {
 	private StatusBar bar;
 	private int[] proportion;//for checking some shitty cases
 	private boolean hard,bonus;
+	private Texture barTexture, targetTexture;
 	private Pool<ColorBall> ballPool=new Pool<ColorBall>(){
 		protected ColorBall newObject(){
 			return new ColorBall();
 		}
 	};
-	
-	 Texture barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
-	 Texture targetTexture = new Texture(Gdx.files.internal("target.png"));
+
 	
 	public MainScreen(ColorGame game){
 		this.game=game;
@@ -71,6 +70,9 @@ public class MainScreen implements Screen {
 		bar=new StatusBar();
 		bucketColor=new MyColor(0,0,0,1);
 		targets = new Array<Color>();
+		
+		barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
+		targetTexture = new Texture(Gdx.files.internal("target.png"));
 	
 		score=0;
 		bonus=true;
@@ -93,6 +95,8 @@ public class MainScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor((float)212/255, (float)202/255,(float) 178/255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+
 		
 		//this.delta=delta;
 		
@@ -263,6 +267,9 @@ public class MainScreen implements Screen {
 		} */
 		//targets.clear(); 
 		background.dispose();
+		barTexture.dispose();
+		bucketTexture.dispose();
+		targetTexture.dispose();
 		//game.dispose();
 	}
 	
