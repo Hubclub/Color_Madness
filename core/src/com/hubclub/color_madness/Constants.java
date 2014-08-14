@@ -17,17 +17,17 @@ public class Constants {
 
     //Menu buttons dimensions in pixels
     //normal button
-    public static final int NORMAL_WIDTH = 250;
-    public static final int NORMAL_HEIGHT = 70;
+    public static final float NORMAL_WIDTH = 250 * width;
+    public static final float NORMAL_HEIGHT = 70 * height;
     //hardcore button
-    public static final int HARDCORE_WIDTH = 303;
-    public static final int HARDCORE_HEIGHT = 70;
+    public static final float HARDCORE_WIDTH = 303 *width;
+    public static final float HARDCORE_HEIGHT = 70 * height;
 
     //Retry screen buttons
-     public static final int RETRY_WIDTH = 193;
-     public static final int RETRY_HEIGHT = 68;
-     public static final int BACK_WIDTH = 173;
-     public static final int BACK_HEIGHT = 71;
+     public static final float RETRY_WIDTH = 193 * width;
+     public static final float RETRY_HEIGHT = 68 * height;
+     public static final float BACK_WIDTH = 173 * width;
+     public static final float BACK_HEIGHT = 71 * height;
 
 	
 	

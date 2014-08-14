@@ -3,6 +3,7 @@ package com.hubclub.color_madness;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
-public class MenuScreen implements Screen{
+public class MenuScreen implements Screen, InputProcessor{
 	
 
 	private ColorGame game;
@@ -22,15 +23,12 @@ public class MenuScreen implements Screen{
 	private SpriteBatch batch;
 	private Rectangle normal, hardcore, pointer;
 	private ShapeRenderer shape;
+	private boolean normalTouched, hardTouched;
 
     private Texture hardcoreButton;
     private Texture normalButton;
 	private Texture background;
 
-    //Stage
-    private Stage stage;
-    private Label label;
-    private Label.LabelStyle style;
     BitmapFont sceneFont;
 	
 	public MenuScreen(ColorGame game){
@@ -40,12 +38,9 @@ public class MenuScreen implements Screen{
 	public void set () {
         //Scene 2d label
         sceneFont = new BitmapFont();
-        style = new Label.LabelStyle();
-        style.font = sceneFont;
-        stage = new Stage();
-        label = new Label("Hello Color Game", style);
 
-
+        
+        Gdx.input.setInputProcessor(this);
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
 		batch = new SpriteBatch();
@@ -81,31 +76,6 @@ public class MenuScreen implements Screen{
 
 
 		batch.end();
-		
-		shape.begin(ShapeType.Filled);
-		//shape.rect(pointer.x,pointer.y, pointer.width, pointer.height);
-		shape.end();
-		
-		if (Gdx.input.justTouched()) {
-			pointer.x=Gdx.input.getX();
-			pointer.y=800*Constants.height-Gdx.input.getY();
-			if (pointer.overlaps(normal)) {
-				this.dispose();
-				//System.gc();
-				ColorGame.mainScreen.set(2,false,0);
-				game.setScreen(ColorGame.mainScreen);
-			}
-			if(pointer.overlaps(hardcore)){
-				this.dispose();
-				System.gc();
-				ColorGame.mainScreen.set(2,true,0);
-				game.setScreen(ColorGame.mainScreen);
-
-			}
-		}
-
-        stage.addActor(label);
-        stage.draw();
 		
 		
 	}
@@ -150,6 +120,86 @@ public class MenuScreen implements Screen{
 		
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		this.pointer.x=screenX;
+		this.pointer.y=800*Constants.height - screenY;
+		if (this.pointer.overlaps(normal) && !hardTouched) {
+			normalButton.dispose();
+			normalButton = new Texture("normal1.png");
+			normal.x-=2;
+			normal.y-=2;
+			normalTouched=true;
+		}
+		
+		if (this.pointer.overlaps(hardcore) && !normalTouched) {
+			hardcoreButton.dispose();
+			hardcoreButton = new Texture("hardcore1.png");
+			hardcore.x-=2;
+			hardcore.y-=2;
+			hardTouched=true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		if (normalTouched) {
+			this.dispose();
+			normalButton.dispose();
+			hardcoreButton.dispose();
+			normalTouched=false;
+			ColorGame.mainScreen.set(2,false,0);
+			game.setScreen(ColorGame.mainScreen);
+		}
+		
+		if (hardTouched) {
+			this.dispose();
+			normalButton.dispose();
+			hardcoreButton.dispose();
+			hardTouched=false;
+			ColorGame.mainScreen.set(2,true,0);
+			game.setScreen(ColorGame.mainScreen);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

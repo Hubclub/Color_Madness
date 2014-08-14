@@ -69,7 +69,6 @@ public class MainScreen implements Screen {
 		bucketMouth = new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y+Constants.BucketHeight*(img.getHeight()-7)/img.getHeight(),Constants.BucketWidth,7*Constants.BucketHeight/img.getHeight());
 		interval=5;
 		bar=new StatusBar();
-		
 		bucketColor=new MyColor(0,0,0,1);
 		targets = new Array<Color>();
 	
