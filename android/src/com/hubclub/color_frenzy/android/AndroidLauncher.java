@@ -48,7 +48,7 @@ public class AndroidLauncher extends  AndroidApplication implements IActivityReq
 		 adView = new AdView(this);
 		 	AdSize adSize=new AdSize(LayoutParams.MATCH_PARENT,AdSize.BANNER.getHeight());
 		    adView.setAdSize(adSize);
-		    adView.setAdUnitId("ca-app-pub-2395926255728628/9134478998");
+		    adView.setAdUnitId("XXXXXXXXXXXXXX");
 		  
 		   
 
