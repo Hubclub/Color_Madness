@@ -25,11 +25,11 @@ public class RetryScreen implements Screen,InputProcessor{
     private Texture background;
     private Texture retryButton;
     private Texture backButton;
+    private IActivityRequestHandler myHandler;
 
-
-	public RetryScreen(ColorGame game){
+	public RetryScreen(ColorGame game,IActivityRequestHandler handler){
 		this.game=game;
-
+		myHandler=handler;
 	}
 
 	public void set(boolean hard,int score){
@@ -154,6 +154,7 @@ public class RetryScreen implements Screen,InputProcessor{
 			menu.x-=2;
 			menu.y-=2;
 			menuTouched=true;
+			
 		}
 		if(this.pointer.overlaps(retry) && !menuTouched){
 			retryButton.dispose();
@@ -161,6 +162,7 @@ public class RetryScreen implements Screen,InputProcessor{
 			retry.x-=2;
 			retry.y-=2;
 			retryTouched=true;
+			
 		}
 		//System.out.println(button);
 		return false;
@@ -175,6 +177,7 @@ public class RetryScreen implements Screen,InputProcessor{
 			backButton.dispose();
 			retryTouched=false;
 			ColorGame.mainScreen.set(2,hard,0);
+			myHandler.showAds(false);
 			game.setScreen(ColorGame.mainScreen);
 			
 

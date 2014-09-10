@@ -5,6 +5,7 @@ package com.hubclub.color_madness;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -21,22 +22,28 @@ public class MenuScreen implements Screen, InputProcessor{
 	private Rectangle normal, hardcore, pointer;
 	private ShapeRenderer shape;
 	private boolean normalTouched, hardTouched;
-
+	private IActivityRequestHandler myHandler;
     private Texture hardcoreButton;
     private Texture normalButton;
 	private Texture background;
+	private FileHandle file,settings;
+	private SensivityBar bar;
 
     BitmapFont sceneFont;
 	
-	public MenuScreen(ColorGame game){
+	public MenuScreen(ColorGame game,IActivityRequestHandler handler){
 		this.game = game;
+		myHandler=handler;
+		file=Gdx.files.local("savefile/highscore.txt");
+		
+		settings=Gdx.files.local("savefile/settings.txt");
 	}
 	
 	public void set () {
         //Scene 2d label
         sceneFont = new BitmapFont();
 
-        
+        bar=new SensivityBar();
         Gdx.input.setInputProcessor(this);
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
@@ -68,11 +75,18 @@ public class MenuScreen implements Screen, InputProcessor{
         //draw the menu buttons
         batch.draw(normalButton, normal.x, normal.y, normal.width, normal.height);
         batch.draw(hardcoreButton, hardcore.x , hardcore.y, hardcore.width, hardcore.height);
+        font.draw(batch, "Bucket sensitivity", 130*Constants.width, 130*Constants.height);
+        bar.draw(batch);
 
 
 		batch.end();
 		
-		
+		if(Gdx.input.isTouched()){
+			if(this.pointer.overlaps(bar.getBar())){
+				if(Gdx.input.getX()>40*Constants.width && Gdx.input.getX()<420*Constants.width)
+					bar.movePointer(Gdx.input.getX());
+			}
+		}
 	}
 
 	@Override
@@ -112,6 +126,7 @@ public class MenuScreen implements Screen, InputProcessor{
 		shape.dispose();
 		batch.dispose();
 		font.dispose();
+		bar.dispose();
 
 		
 		// TODO Auto-generated method stub
@@ -155,18 +170,43 @@ public class MenuScreen implements Screen, InputProcessor{
 			hardcore.y-=2;
 			hardTouched=true;
 		}
+		
+		
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		if (normalTouched) {
+			
 			this.dispose();
 			normalButton.dispose();
 			hardcoreButton.dispose();
 			normalTouched=false;
-			ColorGame.mainScreen.set(2,false,0);
-			game.setScreen(ColorGame.mainScreen);
+			myHandler.showAds(false);
+			Gdx.app.log("MenuScreen", ""+bar.getX());
+			if(settings.exists()){
+				if(Float.valueOf(settings.readString())!=bar.getX()){
+					settings.writeString(Float.toString(bar.getX()),false);
+				}
+			}
+			else{
+				settings.writeString(Float.toString(bar.getX()), false);
+				Gdx.app.log("MenuScreen", ""+bar.getX());
+			}
+		
+			if (file.exists()) {
+				Gdx.app.log("Main-touched", file.name());
+				Gdx.app.log("if-file", "true");
+				ColorGame.mainScreen.set(2, false, 0);
+				game.setScreen(ColorGame.mainScreen);
+				
+			}
+			else {
+				Gdx.app.log("if-file", "false");
+				game.setScreen(ColorGame.instructionScreen);
+			}
+			
 		}
 		
 		if (hardTouched) {
@@ -175,6 +215,7 @@ public class MenuScreen implements Screen, InputProcessor{
 			hardcoreButton.dispose();
 			hardTouched=false;
 			ColorGame.mainScreen.set(2,true,0);
+			myHandler.showAds(false);
 			game.setScreen(ColorGame.mainScreen);
 		}
 		return false;
@@ -197,6 +238,11 @@ public class MenuScreen implements Screen, InputProcessor{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public float getSensivity(){
+		return bar.getX();
+	}
+	
 
 
 }

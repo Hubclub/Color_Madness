@@ -18,9 +18,9 @@ public class StatusBar {
 		bar.width=480*Constants.width;
 		bar.height=50*Constants.height;
 		
-		target=new Circle(50*Constants.width,Constants.height*(800-25),15*Constants.width);
+		target=new Circle(430*Constants.width,Constants.height*(800-25),15*Constants.width);
 		component=new Circle(150*Constants.width,Constants.height*(800-25),15*Constants.width);
-		black=new Rectangle(30*Constants.width,(800-50)*Constants.height,40*Constants.width,50*Constants.height);
+		black=new Rectangle(410*Constants.width,(800-50)*Constants.height,40*Constants.width,50*Constants.height);
 	}
 
 	public Rectangle getBar() {

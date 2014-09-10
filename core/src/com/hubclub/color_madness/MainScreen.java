@@ -5,11 +5,13 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -40,17 +42,21 @@ public class MainScreen implements Screen, InputProcessor {
 	private boolean prins;
 	private StatusBar bar;
 	private int[] proportion;//for checking some shitty cases
-	private boolean hard,bonus;
+	private boolean hard,bonus,flash;
 	private Texture barTexture, targetTexture;
+	private BitmapFont font;
 	private Pool<ColorBall> ballPool=new Pool<ColorBall>(){
 		protected ColorBall newObject(){
 			return new ColorBall();
 		}
 	};
+	IActivityRequestHandler myHandler;
+	private Sound lost, caught, missed;
 
 	
-	public MainScreen(ColorGame game){
+	public MainScreen(ColorGame game,IActivityRequestHandler handler){
 		this.game=game;
+		myHandler=handler;
 	}
 	
 	public void set(int n,boolean hard,int score){
@@ -59,6 +65,7 @@ public class MainScreen implements Screen, InputProcessor {
 		this.hard=hard;
 		alive=1;
 		this.score=score;
+		flash=false;
 		rand=new Random();
 		background = new Texture("color.jpg");
 		img = new Pixmap(Gdx.files.internal("bucket.png"));
@@ -72,9 +79,15 @@ public class MainScreen implements Screen, InputProcessor {
 		bar=new StatusBar();
 		bucketColor=new MyColor(0,0,0,1);
 		targets = new Array<Color>();
-		
 		barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
 		targetTexture = new Texture(Gdx.files.internal("target.png"));
+		font = new BitmapFont();
+		font.setScale(Constants.width*2, Constants.height*2);
+		
+		lost = Gdx.audio.newSound(Gdx.files.internal("data/ggnoob.mp3"));
+		caught = Gdx.audio.newSound(Gdx.files.internal("data/prins.mp3"));
+		missed = Gdx.audio.newSound(Gdx.files.internal("data/ratez.mp3"));
+		
 	
 		score=0;
 		bonus=true;
@@ -90,7 +103,13 @@ public class MainScreen implements Screen, InputProcessor {
 			createMix();
 		}
 		
-		interval=0.5f - (float)n/100 ;
+
+		if(n<=3){
+			interval=0.6f;
+		}
+		else{
+			interval=Math.max(0.5f-(float)n/100,0.25f);
+		}
 	}
 	
 	@Override
@@ -108,6 +127,8 @@ public class MainScreen implements Screen, InputProcessor {
 		
 		//randomly generating the dropping balls
 		spawn+=delta;
+		//System.out.println(interval);
+		
 		if(spawn>interval){
 			
 			cursor=rand.nextInt(11);
@@ -123,8 +144,9 @@ public class MainScreen implements Screen, InputProcessor {
 		// calling the function for the bucket movement
 		bucket.update(delta);
 		bucketMouth.setX(bucket.getX());
-		
-	
+		if(!flash){
+			
+
 		batch.begin();
 		batch.draw(background,0,0,480*Constants.width,800*Constants.height); // an optional background, this one is the best so far.
 		
@@ -133,6 +155,8 @@ public class MainScreen implements Screen, InputProcessor {
 		for(ColorBall ball : balls){
 			batch.draw(ball.getTexture(),ball.getRectangle().x,ball.getRectangle().y,ball.getRectangle().width,ball.getRectangle().height);
 		}
+		
+		font.draw(batch, "Score:"+ score, 0, 25*Constants.height);
 		
 		batch.end();
 
@@ -146,8 +170,9 @@ public class MainScreen implements Screen, InputProcessor {
 				ballPool.free(ball);
 				for (j=0; j<targets.size; j++) {
 					if (targets.get(j).equals(color)) {
-						score=score - 10;
+						score=score - 20;
 						bonus=false;
+						missed.play();
 						break;
 					}
 				}
@@ -158,6 +183,10 @@ public class MainScreen implements Screen, InputProcessor {
 					for (Color target : targets) {
 						if (target.equals(color)) {
 							score= score + 100;
+							if (hard) {
+								score+=100;
+							}
+							
 							if(prins){
 								colorPixmap(img, bucketColor.getRGB(), bucketColor.mix(ball.getColor()).getRGB());
 								bucketTexture.dispose();
@@ -175,6 +204,7 @@ public class MainScreen implements Screen, InputProcessor {
 							ballPool.free(ball);
 							targets.removeValue(target, false); //BAMB TRAMP A REZOLVAT PROBLEMA DUMNEZEII EI
 							alive=1;
+							caught.play();
 							break;
 						}
 						else {
@@ -187,13 +217,22 @@ public class MainScreen implements Screen, InputProcessor {
 
 		
 		updateStatusBar();
+		}
+		else{
+			Gdx.gl.glClearColor((float)212/255, (float)202/255,(float) 178/255, 1);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		}
 		// checking if we are still alive or not ^^
 		if (alive==0) {
 			
+			lost.play();
 			//reading/writing the file in which we keep the highscore
 			FileHandle file = Gdx.files.local("savefile/highscore.txt");
 			if(file.exists()){
 			  highscore = Integer.valueOf(file.readString());
+			}else{
+				
+				highscore=-30000;
 			}
 			
 			if(score > highscore){
@@ -202,16 +241,19 @@ public class MainScreen implements Screen, InputProcessor {
 			this.dispose();
 			System.gc();
 			ColorGame.retryScreen.set(hard,score);
+			myHandler.showAds(true);
 			game.setScreen(ColorGame.retryScreen);
 			
 		}
 		
 		if (targets.size==0) {
 			if (bonus) {
-				score = score +100;
+				score = score +200;
 			}
 			this.dispose();
 			System.gc();
+			Gdx.gl20.glClearColor(1, 1, 1, 1);
+			flash=true;
 			ColorGame.mainScreen.set(n+1,hard,score);
 			game.setScreen(ColorGame.mainScreen);
 			
@@ -272,6 +314,11 @@ public class MainScreen implements Screen, InputProcessor {
 		barTexture.dispose();
 		bucketTexture.dispose();
 		targetTexture.dispose();
+		
+		lost.dispose();
+		caught.dispose();
+		missed.dispose();
+		font.dispose();
 		//game.dispose();
 	}
 	
@@ -313,7 +360,6 @@ public class MainScreen implements Screen, InputProcessor {
 	
 	public void colorPixmap(Pixmap pixmap,Color init,Color end){
 		pixmap.setColor(end);
-		
 		for(i=0;i<pixmap.getWidth();i++){
 			for(j=0;j<pixmap.getHeight()/2;j++){
 				if(pixmap.getPixel(i, j)==Color.rgba8888(init)){
@@ -341,7 +387,7 @@ public class MainScreen implements Screen, InputProcessor {
 			//drawing the targets colors
 			for(i=0;i<targets.size;i++){
 					shape.setColor(targets.get(i));
-					shape.circle(Math.max(i*380*Constants.width/n + 100*Constants.width,i*60*Constants.width+100*Constants.width), bar.getComponent().y, bar.getComponent().radius);
+					shape.circle(Math.min(-(i+1)*380*Constants.width/n + 430*Constants.width,-(i+1)*60*Constants.width+430*Constants.width), bar.getComponent().y, bar.getComponent().radius);
 			}
 		}
 		shape.end();

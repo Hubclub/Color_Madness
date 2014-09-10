@@ -5,14 +5,24 @@ public class ColorGame extends com.badlogic.gdx.Game {
 	public static MainScreen mainScreen ;
 	public static MenuScreen menuScreen ;
 	public static RetryScreen retryScreen ; 
+	public static InstructionScreen instructionScreen;
+	public static boolean ad;
+	private IActivityRequestHandler myRequestHandler;
+	
+	public ColorGame(IActivityRequestHandler handler ){
+		myRequestHandler=handler;
+	}
 	
 	@Override
 	public void create () {
-		mainScreen = new MainScreen(this);
-		menuScreen = new MenuScreen(this);
+		ad=true;
+		instructionScreen = new InstructionScreen(this);
+		mainScreen = new MainScreen(this,myRequestHandler);
+		menuScreen = new MenuScreen(this,myRequestHandler);
 		menuScreen.set();
-		retryScreen = new RetryScreen(this);
+		retryScreen = new RetryScreen(this,myRequestHandler);
 		this.setScreen(menuScreen);
+
 	}
 
 	@Override

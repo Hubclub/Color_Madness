@@ -5,16 +5,18 @@ package com.hubclub.color_madness;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
+
 import com.badlogic.gdx.math.Rectangle;
 
 public class Bucket {
 	
 	private Rectangle rectangle;
+
 	
 	public Bucket(Rectangle rectangle){
 		
 		this.rectangle = new Rectangle (rectangle);
-		
+
 	}
 	
 	public void update(float delta) {
@@ -22,7 +24,7 @@ public class Bucket {
 			//The movement of the bucket for Android/Desktop versions
 		
 			if(Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer) ){
-				rectangle.x-=Gdx.input.getAccelerometerX()*delta*Constants.width*110;
+				rectangle.x-=Gdx.input.getAccelerometerX()*delta*Constants.width*2.6f*(ColorGame.menuScreen.getSensivity()-40)/(4*Constants.width);
 			}
 		
 			if(Gdx.input.isKeyPressed(Keys.A)) {
