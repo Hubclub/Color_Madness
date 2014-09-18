@@ -1,51 +1,79 @@
 package com.hubclub.color_madness;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
-public class InstructionScreen implements Screen, InputProcessor {
+public class LoadingScreen implements Screen, InputProcessor {
 	
-	private Texture texture ;
-	private SpriteBatch batch ;
 	private ColorGame game;
+	private SpriteBatch myBatch;
+	private Texture texture;
+	private boolean menu, hard, dispose;
 	
-	public InstructionScreen (ColorGame game) {
-		Gdx.input.setInputProcessor(this);
+	
+	public LoadingScreen(ColorGame game, IActivityRequestHandler handler){
 		this.game=game;
-		texture = new Texture ("instruction_normal.png");
-		batch = new SpriteBatch ();
-		/*batch.begin();
-		batch.draw(texture,0f, 0f, 480*Constants.width, 800*Constants.height);
-		batch.end();
 		
-		if (Gdx.input.justTouched()) {
-			dispose();
-			game.setScreen(ColorGame.mainScreen);
+		
+	}
+	
+	public void set ( boolean menu, boolean hard) {
+		
+		
+		this.menu=menu;
+		this.hard=hard;
+		texture = new Texture ("Loadingpic.png");
+		myBatch = new SpriteBatch();
+		dispose=false;
+		
+	//	ColorGame.mainScreen.set(2, hard, 0);
+		if (menu) {
+		
+			ColorGame.menuScreen.set();
+			Timer.schedule(new Task() {
+				public void run () {
+					ColorGame.loadingScreen.dispose();
+					game.setScreen(ColorGame.menuScreen);
+			
 
+				}
+			}, 2);
 		}
-		*/
+		else {
+			
+		
+			
+			ColorGame.mainScreen.set( hard);
+			
+			Timer.schedule(new Task() {
+				public void run () {
+					ColorGame.loadingScreen.dispose();
+					game.setScreen(ColorGame.mainScreen);
+					System.out.println("da");
+				}
+			}, 2);
+		}
+		
 	}
 
 	@Override
 	public void render(float delta) {
-		// TODO Auto-generated method stub
+			
 		
-		batch.begin();
-		batch.draw(texture,0f, 0f, 480*Constants.width, 800*Constants.height);
-		batch.end();
+		myBatch.begin();
+		myBatch.draw(texture, 0, 0, 480*Constants.width, 800*Constants.height);
+		myBatch.end();
 		
-		if (Gdx.input.justTouched()) {
-			dispose();
-			ColorGame.mainScreen.set(false);
-			game.setScreen(ColorGame.mainScreen);
-			//dispose();
-		}
-	
+		
+		//System.out.println(" "+ dispose);
+		
 	}
 
+	
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
@@ -80,9 +108,9 @@ public class InstructionScreen implements Screen, InputProcessor {
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
+		myBatch.dispose();
 		texture.dispose();
-		batch.dispose();
-		System.gc();
+		
 	}
 
 	@Override
@@ -132,7 +160,5 @@ public class InstructionScreen implements Screen, InputProcessor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
 
 }

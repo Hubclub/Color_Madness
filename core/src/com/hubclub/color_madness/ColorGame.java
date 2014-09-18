@@ -6,6 +6,7 @@ public class ColorGame extends com.badlogic.gdx.Game {
 	public static MenuScreen menuScreen ;
 	public static RetryScreen retryScreen ; 
 	public static InstructionScreen instructionScreen;
+	public static LoadingScreen loadingScreen;
 	public static boolean ad;
 	private IActivityRequestHandler myRequestHandler;
 	
@@ -19,9 +20,10 @@ public class ColorGame extends com.badlogic.gdx.Game {
 		instructionScreen = new InstructionScreen(this);
 		mainScreen = new MainScreen(this,myRequestHandler);
 		menuScreen = new MenuScreen(this,myRequestHandler);
-		menuScreen.set();
+		loadingScreen = new LoadingScreen(this, myRequestHandler);
+		loadingScreen.set(true, true);
 		retryScreen = new RetryScreen(this,myRequestHandler);
-		this.setScreen(menuScreen);
+		this.setScreen(loadingScreen);
 
 	}
 

@@ -198,8 +198,8 @@ public class MenuScreen implements Screen, InputProcessor{
 			if (file.exists()) {
 				Gdx.app.log("Main-touched", file.name());
 				Gdx.app.log("if-file", "true");
-				ColorGame.mainScreen.set(2, false, 0);
-				game.setScreen(ColorGame.mainScreen);
+				ColorGame.loadingScreen.set(false, false);
+				game.setScreen(ColorGame.loadingScreen);
 				
 			}
 			else {
@@ -214,9 +214,9 @@ public class MenuScreen implements Screen, InputProcessor{
 			normalButton.dispose();
 			hardcoreButton.dispose();
 			hardTouched=false;
-			ColorGame.mainScreen.set(2,true,0);
+			ColorGame.loadingScreen.set(false,true);
 			myHandler.showAds(false);
-			game.setScreen(ColorGame.mainScreen);
+			game.setScreen(ColorGame.loadingScreen);
 		}
 		return false;
 	}

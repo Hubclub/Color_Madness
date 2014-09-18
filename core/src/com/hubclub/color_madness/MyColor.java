@@ -8,6 +8,7 @@ public class MyColor extends Color{
 	public float c,m,y,k,a;
 	public int combined=2;
  
+	
 public MyColor(float c, float m, float y, float k , float a){
 	 this.c=c;
 	 this.m=m;
@@ -27,6 +28,18 @@ public MyColor(float c, float m, float y, float k , float a){
 	 this.a=a;
   
  
+	 k=Math.min(c, Math.min(y,m));
+	 c=(255-r-k)/(255-k);
+	 m=(255-g-k)/(255-k);
+	 y=(255-b-k)/(255-k);
+ }
+ 
+ public MyColor(Color color){
+	 r=Math.round(color.r*255);
+	 g=Math.round(color.g*255);
+	 b=Math.round(color.b*255);
+	 a=Math.round(color.a*255);
+	 
 	 k=Math.min(c, Math.min(y,m));
 	 c=(255-r-k)/(255-k);
 	 m=(255-g-k)/(255-k);

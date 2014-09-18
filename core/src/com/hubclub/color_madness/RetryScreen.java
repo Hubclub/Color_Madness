@@ -41,7 +41,7 @@ public class RetryScreen implements Screen,InputProcessor{
 		Gdx.input.setInputProcessor(this);
 		pointer = new Rectangle(0,0,0.1f, 0.1f);
 		batch=new SpriteBatch();
-		font=new BitmapFont();
+		font=new BitmapFont(Gdx.files.internal("myfont.fnt"),false);
 		font.setScale(Constants.width*2, Constants.height*2);
 		file = Gdx.files.local("savefile/highscore.txt");
 		this.hard=hard;
@@ -176,7 +176,7 @@ public class RetryScreen implements Screen,InputProcessor{
 			retryButton.dispose();
 			backButton.dispose();
 			retryTouched=false;
-			ColorGame.mainScreen.set(2,hard,0);
+			ColorGame.mainScreen.set(hard);
 			myHandler.showAds(false);
 			game.setScreen(ColorGame.mainScreen);
 			

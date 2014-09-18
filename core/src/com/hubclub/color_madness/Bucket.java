@@ -23,6 +23,10 @@ public class Bucket {
 		
 			//The movement of the bucket for Android/Desktop versions
 		
+			if(Gdx.input.isTouched()){
+				rectangle.x=Gdx.input.getX()-rectangle.width/2;
+			}
+		
 			if(Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer) ){
 				rectangle.x-=Gdx.input.getAccelerometerX()*delta*Constants.width*2.6f*(ColorGame.menuScreen.getSensivity()-40)/(4*Constants.width);
 			}

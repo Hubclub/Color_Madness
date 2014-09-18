@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 public class MainScreen implements Screen, InputProcessor {
 
+	private final MyColor WHITE=new MyColor(new Color(-1));
 	private ColorGame game;
 	private Texture  background,bucketTexture;
 	private MyColor mix;// the color that must be obtained
@@ -42,7 +43,7 @@ public class MainScreen implements Screen, InputProcessor {
 	private boolean prins;
 	private StatusBar bar;
 	private int[] proportion;//for checking some shitty cases
-	private boolean hard,bonus,flash;
+	private boolean hard,bonus;
 	private Texture barTexture, targetTexture;
 	private BitmapFont font;
 	private Pool<ColorBall> ballPool=new Pool<ColorBall>(){
@@ -57,39 +58,44 @@ public class MainScreen implements Screen, InputProcessor {
 	public MainScreen(ColorGame game,IActivityRequestHandler handler){
 		this.game=game;
 		myHandler=handler;
+		balls = new Array<ColorBall>();
+		bucketMouth = new Rectangle();
+		bucket=new Bucket(new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight));
+		targets = new Array<Color>();
+		rand=new Random();
 	}
 	
-	public void set(int n,boolean hard,int score){
+	
+	public void set(boolean hard){
 		Gdx.input.setInputProcessor(this);
-		this.n=n;
+		this.n=2;
 		this.hard=hard;
 		alive=1;
-		this.score=score;
-		flash=false;
-		rand=new Random();
+		score=0;
+		bucket.getRectangle().set(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight);
 		background = new Texture("color.jpg");
 		img = new Pixmap(Gdx.files.internal("bucket.png"));
 		bucketTexture=new Texture(img);
 		batch = new SpriteBatch();
-		bucket=new Bucket(new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight));
-		balls = new Array<ColorBall>();
+		
+		bucketMouth.set(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y+Constants.BucketHeight*(img.getHeight()-100)/img.getHeight(),Constants.BucketWidth,7*Constants.BucketHeight/img.getHeight());
 		shape=new ShapeRenderer();
-		bucketMouth = new Rectangle(Constants.BucketStartPoint.x,Constants.BucketStartPoint.y+Constants.BucketHeight*(img.getHeight()-7)/img.getHeight(),Constants.BucketWidth,7*Constants.BucketHeight/img.getHeight());
-		interval=5;
+		
+		
 		bar=new StatusBar();
-		bucketColor=new MyColor(0,0,0,1);
-		targets = new Array<Color>();
-		barTexture = new Texture(Gdx.files.internal("gold_bar.png"));
+		bucketColor=WHITE;
+		
+		barTexture = new Texture(Gdx.files.internal("gold_bar1.png"));
 		targetTexture = new Texture(Gdx.files.internal("target.png"));
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
+		
 		
 		lost = Gdx.audio.newSound(Gdx.files.internal("data/ggnoob.mp3"));
 		caught = Gdx.audio.newSound(Gdx.files.internal("data/prins.mp3"));
 		missed = Gdx.audio.newSound(Gdx.files.internal("data/ratez.mp3"));
 		
 	
-		score=0;
 		bonus=true;
 		prins=false;
 		//defining the palette colors
@@ -97,19 +103,21 @@ public class MainScreen implements Screen, InputProcessor {
 		proportion=new int[11];
 		initVector(proportion);
 		
+		for(int k=1;k<=5;k++){
+			ColorBall newBall = ballPool.obtain();
+			newBall.setTexture(new Texture("1.png"));
+			ballPool.free(newBall);
+		}
+		
+		
 		createMix();
 		//we use this to prevent the case in which we have to combine the same colors (eg : 2 red and 2 blue , 4 red)
 		while(cmmdc(proportion)!=1){
 			createMix();
 		}
 		
+		interval=0.6f;
 
-		if(n<=3){
-			interval=0.6f;
-		}
-		else{
-			interval=Math.max(0.5f-(float)n/100,0.25f);
-		}
 	}
 	
 	@Override
@@ -117,17 +125,8 @@ public class MainScreen implements Screen, InputProcessor {
 		Gdx.gl.glClearColor((float)212/255, (float)202/255,(float) 178/255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-
-		
-		//this.delta=delta;
-		
-		//System.out.println(ballPool.getFree());
-		//System.out.println("" + interval);
-		//System.out.println(Gdx.app.getJavaHeap());
-		
-		//randomly generating the dropping balls
 		spawn+=delta;
-		//System.out.println(interval);
+
 		
 		if(spawn>interval){
 			
@@ -144,10 +143,9 @@ public class MainScreen implements Screen, InputProcessor {
 		// calling the function for the bucket movement
 		bucket.update(delta);
 		bucketMouth.setX(bucket.getX());
-		if(!flash){
 			
-
 		batch.begin();
+		
 		batch.draw(background,0,0,480*Constants.width,800*Constants.height); // an optional background, this one is the best so far.
 		
 		batch.draw(bucketTexture,bucket.getX(),Constants.BucketStartPoint.y,Constants.BucketWidth,Constants.BucketHeight);
@@ -214,14 +212,10 @@ public class MainScreen implements Screen, InputProcessor {
 					}
 				}
 		}
-
+		
 		
 		updateStatusBar();
-		}
-		else{
-			Gdx.gl.glClearColor((float)212/255, (float)202/255,(float) 178/255, 1);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		}
+		
 		// checking if we are still alive or not ^^
 		if (alive==0) {
 			
@@ -238,6 +232,7 @@ public class MainScreen implements Screen, InputProcessor {
 			if(score > highscore){
 			   file.writeString(Integer.toString(score ),false);
 			}
+			
 			this.dispose();
 			System.gc();
 			ColorGame.retryScreen.set(hard,score);
@@ -247,18 +242,39 @@ public class MainScreen implements Screen, InputProcessor {
 		}
 		
 		if (targets.size==0) {
-			if (bonus) {
-				score = score +200;
-			}
-			this.dispose();
-			System.gc();
-			Gdx.gl20.glClearColor(1, 1, 1, 1);
-			flash=true;
-			ColorGame.mainScreen.set(n+1,hard,score);
-			game.setScreen(ColorGame.mainScreen);
 			
-		}
+			
+			colorPixmap(img, bucketColor.getRGB(),WHITE.getRGB());
+			bucketTexture.dispose();
+			bucketTexture=new Texture(img);
+			bucketColor=WHITE;
+			prins=false;
+			
+			if (bonus) {
+				score+=200;
+			}
+			else bonus=true;
+			
+			for(ColorBall ball : balls){
+				balls.removeValue(ball,false );
+				ballPool.free(ball);
+			}
+			n++;
+			createMix();
+			//we use this to prevent the case in which we have to combine the same colors (eg : 2 red and 2 blue , 4 red)
+			while(cmmdc(proportion)!=1){
+				createMix();
+			}
+			
+			if(n<=3){
+				interval=0.6f;
+			}
+			else{
+				interval=Math.max(0.5f-(float)n/100,0.25f);
+			}
 		
+		}
+	
 		
 	}
 	
@@ -304,6 +320,7 @@ public class MainScreen implements Screen, InputProcessor {
 			balls.removeValue(ball, false);
 			ballPool.free(ball);
 		}
+		ballPool.clear();
 		balls.clear();
 		
 		/* for (Color color : targets) {
@@ -361,12 +378,14 @@ public class MainScreen implements Screen, InputProcessor {
 	public void colorPixmap(Pixmap pixmap,Color init,Color end){
 		pixmap.setColor(end);
 		for(i=0;i<pixmap.getWidth();i++){
-			for(j=0;j<pixmap.getHeight()/2;j++){
+			for(j=0;j<pixmap.getHeight()/3;j++){
 				if(pixmap.getPixel(i, j)==Color.rgba8888(init)){
 					pixmap.drawPixel(i, j);
 				}
 			}
 		}
+		
+		System.out.println(pixmap.getPixel(pixmap.getWidth()/2, 100));
 	}
 	
 	 private void updateStatusBar() {
@@ -379,7 +398,6 @@ public class MainScreen implements Screen, InputProcessor {
 		 shape.begin(ShapeType.Filled);
 		 shape.setColor(mix.getRGB());
 		 shape.circle(bar.getTarget().x, bar.getTarget().y, bar.getTarget().radius);
-		 
 		 
 		 //checking if hardcore mode is enabled or not. In hardcore mode the targets colors won't be displayed
 		 if(hard!=true){
