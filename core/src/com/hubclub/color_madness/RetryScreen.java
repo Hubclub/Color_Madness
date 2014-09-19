@@ -30,23 +30,20 @@ public class RetryScreen implements Screen,InputProcessor{
 	public RetryScreen(ColorGame game,IActivityRequestHandler handler){
 		this.game=game;
 		myHandler=handler;
-		retry = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.RETRY_WIDTH / 2, 500*Constants.height, Constants.RETRY_WIDTH, Constants.RETRY_HEIGHT);
-		menu = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.BACK_WIDTH / 2, 300*Constants.height, Constants.BACK_WIDTH, Constants.BACK_HEIGHT);
-		pointer = new Rectangle(0,0,0.1f, 0.1f);
-		file = Gdx.files.local("savefile/highscore.txt");
 	}
 
 	public void set(boolean hard,int score){
 		this.score=score;
 		shape = new ShapeRenderer();
 	
-		
+		retry = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.RETRY_WIDTH / 2, 500*Constants.height, Constants.RETRY_WIDTH, Constants.RETRY_HEIGHT);
+		menu = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.BACK_WIDTH / 2, 300*Constants.height, Constants.BACK_WIDTH, Constants.BACK_HEIGHT);
 		Gdx.input.setInputProcessor(this);
-		
+		pointer = new Rectangle(0,0,0.1f, 0.1f);
 		batch=new SpriteBatch();
 		font=new BitmapFont(Gdx.files.internal("myfont.fnt"),false);
 		font.setScale(Constants.width*2, Constants.height*2);
-		
+		file = Gdx.files.local("savefile/highscore.txt");
 		this.hard=hard;
         //background
         background = new Texture(Gdx.files.internal("colour_cloud.jpg"));
