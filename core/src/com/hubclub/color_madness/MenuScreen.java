@@ -17,42 +17,52 @@ public class MenuScreen implements Screen, InputProcessor{
 	
 
 	private ColorGame game;
+	
 	private BitmapFont font;
+	private BitmapFont sceneFont;
+	
 	private SpriteBatch batch;
+	
 	private Rectangle normal, hardcore, pointer;
-	private ShapeRenderer shape;
+	
 	private boolean normalTouched, hardTouched;
+	
 	private IActivityRequestHandler myHandler;
+	
     private Texture hardcoreButton;
     private Texture normalButton;
 	private Texture background;
+	
 	private FileHandle file,settings;
+	
 	private SensivityBar bar;
 
-    BitmapFont sceneFont;
+    
 	
 	public MenuScreen(ColorGame game,IActivityRequestHandler handler){
-		this.game = game;
-		myHandler=handler;
-		file=Gdx.files.local("savefile/highscore.txt");
+		 this.game = game;
+		 myHandler=handler;
+		 file=Gdx.files.local("savefile/highscore.txt");
 		
-		settings=Gdx.files.local("savefile/settings.txt");
+		 settings=Gdx.files.local("savefile/settings.txt");
+		 bar=new SensivityBar();
+		 pointer = new Rectangle (0,0, 0.1f, 0.1f);
+		 normal = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.NORMAL_WIDTH/2, 500*Constants.height,250*Constants.width, 70*Constants.height); //i have no idea where does 500 and 250 px comes from
+		 hardcore = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.HARDCORE_WIDTH /2, 300*Constants.height, Constants.HARDCORE_WIDTH, Constants.HARDCORE_HEIGHT); //300 is still a mistery
 	}
 	
 	public void set () {
         //Scene 2d label
         sceneFont = new BitmapFont();
 
-        bar=new SensivityBar();
+       
         Gdx.input.setInputProcessor(this);
 		font = new BitmapFont();
 		font.setScale(Constants.width*2, Constants.height*2);
 		batch = new SpriteBatch();
-		shape = new ShapeRenderer();
-		pointer = new Rectangle (0,0, 0.1f, 0.1f);
+				
 
-		normal = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.NORMAL_WIDTH/2, 500*Constants.height,250*Constants.width, 70*Constants.height); //i have no idea where does 500 and 250 px comes from
-		hardcore = new Rectangle(Gdx.graphics.getWidth() / 2 - Constants.HARDCORE_WIDTH /2, 300*Constants.height, Constants.HARDCORE_WIDTH, Constants.HARDCORE_HEIGHT); //300 is still a mistery
+		
         //background
         background = new Texture(Gdx.files.internal("colour_cloud.jpg"));
 
@@ -123,11 +133,11 @@ public class MenuScreen implements Screen, InputProcessor{
 	public void dispose() {
 		//game.dispose();
 		background.dispose();
-		shape.dispose();
+		
 		batch.dispose();
 		font.dispose();
 		bar.dispose();
-
+		sceneFont.dispose();
 		
 		// TODO Auto-generated method stub
 		
